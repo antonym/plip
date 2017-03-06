@@ -1,0 +1,42 @@
+#!ipxe
+# 
+#  PXE file last generated: {{ timestamp }}
+#  Attributes for server_name: {{server_data['name']}}
+
+# device attributes
+set cloud_id {{server_data['cloud_id']}}
+set project_id {{server_data['project_id']}}
+set region_id {{server_data['region_id']}}
+set cell_id {{server_data['cell_id']}}
+set host_id {{server_data['id']}}
+set server_name {{server_data['name']}}
+
+# networking
+set datacenter
+set mgmt_netmask 255.255.252.0
+set mgmt_ip_block_cidr 10.22.8.0/22
+set mgmt_gateway_ip 10.22.8.1
+set mgmt_ip_block_type PublicIpBlock
+set mgmt_vlan_number 50
+set mgmt_nss NSS33
+set mgmt_ip_address 10.22.8.50
+set primary_dns 8.8.8.8
+set secondary_dns 8.8.4.4
+
+# ecopoiesis settings
+set ecopoiesis_bootstrapped {{server_data['variables']['ecopoiesis_bootstrapped']}}
+set ecopoiesis_boot_os {{server_data['variables']['ecopoiesis_boot_os']}}
+set ecopoiesis_boot_os_version {{server_data['variables']['ecopoiesis_boot_os_version']}}
+set ecopoiesis_boot_profile {{server_data['variables']['ecopoiesis_boot_profile']}}
+set ecopoiesis_boot_status {{server_data['variables']['ecopoiesis_boot_status']}}
+set ecopoiesis_enforce_firmware {{server_data['variables']['ecopoiesis_enforce_firmware']}}
+set ecopoiesis_operational_status {{server_data['variables']['ecopoiesis_operational_status']}}
+
+# rax datacenter attributes
+set core_name {{server_data['variables']['core_name']}}
+set core_status {{server_data['variables']['core_status']}}
+
+{% if request.args.get('debug') == 'yes' %}
+# CRATON DUMP
+{{ server_data_dump }}
+{% endif %}
