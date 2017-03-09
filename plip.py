@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 from flask import Flask, render_template, make_response, request, abort
 from flask import jsonify
-from hotqueue import HotQueue
 import json
 import logging
 import os
@@ -13,10 +12,6 @@ import config
 
 
 app = Flask(__name__)
-
-# Set up a redis queue for handling Craton updates
-global queue
-queue = HotQueue("ecopoiesis")
 
 # NOTE(major): Change to the directory of plip.py (this script) so that we
 # can write to the static_pxe relative path.
