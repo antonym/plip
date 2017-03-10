@@ -69,7 +69,7 @@ def get_server_by_mac(mac_address):
     Return json if successful, False if unsuccessful.
     """
 
-    url = '%s/hosts?vars=mac:%s' % ( craton_url, mac_address )
+    url = '%s/hosts?vars=mac:%s&details=all' % ( craton_url, mac_address )
     r = requests.get(url, headers=auth_headers())
     if r.status_code == requests.codes.ok:
         return r.json()
@@ -141,7 +141,7 @@ def get_pxe_script(config_file=None):
     elif 'mac' in request.args:
         mac = request.args.get('mac')
         mac_address = mac.replace("-", ":")
-        server_data = get_server_by_mac(mac_address)
+        server_data = get_server_by_mac(mac_address)['hosts'][0]
     else:
         # Get the switch data and strip it
         switch_name = request.args.get('switch_name')
