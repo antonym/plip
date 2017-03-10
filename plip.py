@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 from flask import Flask, render_template, make_response, request, abort
-from flask import jsonify
 import json
 import logging
 import os
@@ -22,6 +21,7 @@ logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
 
 # Set craton url
 craton_url = config.craton_url
+
 
 def auth_headers():
     """
@@ -54,7 +54,7 @@ def get_server_by_number(server_number):
     Return json if successful, False if unsuccessful.
     """
 
-    url = '%s/hosts/%s' % ( craton_url, server_number )
+    url = '%s/hosts/%s' % (craton_url, server_number)
     r = requests.get(url, headers=auth_headers())
     if r.status_code == requests.codes.ok:
         return r.json()
@@ -69,7 +69,7 @@ def get_server_by_mac(mac_address):
     Return json if successful, False if unsuccessful.
     """
 
-    url = '%s/hosts?vars=mac:%s&details=all' % ( craton_url, mac_address )
+    url = '%s/hosts?vars=mac:%s&details=all' % (craton_url, mac_address)
     r = requests.get(url, headers=auth_headers())
     if r.status_code == requests.codes.ok:
         return r.json()
@@ -87,8 +87,8 @@ def get_server_by_switch(switch_name, switch_port, datacentre):
     Return json if successful, False if unsuccessful.
     """
 
-    url = '%s/hosts?vars=switch_name:%s,switch_port:%s' % ( 
-               craton_url, switch_name, switch_port )
+    url = '%s/hosts?vars=switch_name:%s,switch_port:%s' % (
+               craton_url, switch_name, switch_port)
     r = requests.get(url, headers=auth_headers())
     if r.status_code == requests.codes.ok:
         return r.json()
@@ -100,11 +100,12 @@ def strip_switch(switch_name):
     '''
         Returns a tuple of (<switch name>, <dc>)
     '''
-    return (switch_name.upper().split('.')[0], switch_name.lower().split('.')[1])
+    return (switch_name.upper().split('.')[0],
+            switch_name.lower().split('.')[1])
 
 
 def strip_switch_port(switch_port):
-    return switch_port.rsplit('/', 1 )[1]
+    return switch_port.rsplit('/', 1)[1]
 
 
 @app.route("/")
@@ -145,7 +146,7 @@ def get_pxe_script(config_file=None):
     else:
         # Get the switch data and strip it
         switch_name = request.args.get('switch_name')
-        switch_name_stripped, datacentre_stripped  = strip_switch(switch_name)
+        switch_name_stripped, datacentre_stripped = strip_switch(switch_name)
         switch_port = request.args.get('switch_port')
         switch_port_stripped = strip_switch_port(switch_port)
 
