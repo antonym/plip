@@ -12,16 +12,14 @@ set host_id {{server_data['id']}}
 set server_name {{server_data['name']}}
 
 # networking
-set datacenter
-set mgmt_netmask 255.255.252.0
-set mgmt_ip_block_cidr 10.22.8.0/22
-set mgmt_gateway_ip 10.22.8.1
-set mgmt_ip_block_type PublicIpBlock
-set mgmt_vlan_number 50
-set mgmt_nss NSS33
-set mgmt_ip_address 10.22.8.50
-set primary_dns 8.8.8.8
-set secondary_dns 8.8.4.4
+set datacenter {{server_data['variables']['datacenter']}}
+set mgmt_netmask {{server_data['variables']['mgmt_netmask']}}
+set mgmt_ip_block_cidr {{server_data['variables']['mgmt_ip_block_cidr']}}
+set mgmt_gateway_ip {{server_data['variables']['mgmt_gateway_ip']}}
+set mgmt_vlan_number {{server_data['variables']['mgmt_vlan_number']}}
+set mgmt_ip_address {{server_data['variables']['mgmt_ip_address']}}
+set primary_dns {{server_data['variables']['primary_dns']}}
+set secondary_dns {{server_data['variables']['secondary_dns']}}
 
 # ecopoiesis settings
 set ecopoiesis_bootstrapped {{server_data['variables']['ecopoiesis_bootstrapped']}}

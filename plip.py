@@ -69,7 +69,7 @@ def get_server_by_mac(mac_address):
     Return json if successful, False if unsuccessful.
     """
 
-    url = '%s/hosts?vars=mac:%s&details=all' % (craton_url, mac_address)
+    url = '%s/hosts?vars=macs:%s&details=all' % (craton_url, mac_address)
     r = requests.get(url, headers=auth_headers())
     if r.status_code == requests.codes.ok:
         return r.json()
