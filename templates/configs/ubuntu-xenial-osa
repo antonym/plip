@@ -1,0 +1,147 @@
+d-i debian-installer/locale string en_US
+d-i debian-installer/language string en
+d-i debian-installer/country string US
+d-i passwd/user-fullname string
+d-i passwd/username string ubuntu
+d-i passwd/root-password password ubuntu
+d-i passwd/root-password-again password ubuntu
+d-i passwd/user-password password ubuntu
+d-i passwd/user-password-again password ubuntu
+d-i user-setup/allow-password-weak boolean true
+# netcfg will choose an interface that has link if possible. This makes it
+# skip displaying a list if there is more than one interface.
+d-i netcfg/choose_interface select auto
+
+# To pick a particular interface instead:
+#d-i netcfg/choose_interface select eth1
+
+# To set a different link detection timeout (default is 3 seconds).
+# Values are interpreted as seconds.
+#d-i netcfg/link_detection_timeout string 10
+
+# If you have a slow dhcp server and the installer times out waiting for
+# it, this might be useful.
+#d-i netcfg/dhcp_timeout string 60
+#d-i netcfg/dhcpv6_timeout string 60
+
+# If you prefer to configure the network manually, uncomment this line and
+# the static network configuration below.
+#d-i netcfg/disable_autoconfig boolean true
+
+# If you want the preconfiguration file to work on systems both with and
+# without a dhcp server, uncomment these lines and the static network
+# configuration below.
+#d-i netcfg/dhcp_failed note
+#d-i netcfg/dhcp_options select Configure network manually
+
+# Static network configuration.
+#
+# IPv4 example
+d-i netcfg/get_ipaddress string {{ server_data['variables']['mgmt_ip_address'] }}
+d-i netcfg/get_netmask string {{ server_data['variables']['mgmt_netmask'] }}
+d-i netcfg/get_gateway string {{ server_data['variables']['mgmt_gateway_ip'] }}
+d-i netcfg/get_nameservers string {{ server_data['variables']['primary_dns'] }} {{ server_data['variables']['secondary_dns'] }}
+d-i netcfg/confirm_static boolean true
+#
+# IPv6 example
+#d-i netcfg/get_ipaddress string fc00::2
+#d-i netcfg/get_netmask string ffff:ffff:ffff:ffff::
+#d-i netcfg/get_gateway string fc00::1
+#d-i netcfg/get_nameservers string fc00::1
+#d-i netcfg/confirm_static boolean true
+
+
+d-i netcfg/get_hostname string {{ server_data['variables']['server_name'] }}
+d-i netcfg/get_domain string unassigned-domain {{ server_data['variables']['domain'] }}
+d-i mirror/country string manual
+d-i mirror/http/hostname string http://us.archive.ubuntu.com
+d-i mirror/http/directory string /ubuntu
+d-i mirror/http/proxy string
+d-i clock-setup/utc boolean true
+d-i clock-setup/ntp boolean true
+d-i time/zone string UTC
+d-i clock-setup/ntp-server string 0.pool.ntp.org
+d-i partman/confirm boolean true
+d-i partman/choose_partition select finish
+d-i partman/confirm_nooverwrite boolean true
+d-i partman-auto/disk string /dev/sda
+d-i partman-auto/method string regular
+d-i partman-auto/choose_recipe select atomic
+d-i partman-partitioning/confirm_write_new_label boolean true
+d-i partman/choose_partition select finish
+d-i partman/confirm boolean true
+d-i partman/confirm_nooverwrite boolean true
+d-i partman-lvm/confirm_nooverwrite boolean true
+d-i pkgsel/include string ubuntu-minimal openssh-server aptitude build-essential git ntp ntpdate python-dev sudo git ansible
+
+# Retrieve ansible playbook and run
+d-i preseed/late_command string \
+in-target wget -q -O /etc/systemd/system/ecopoiesis-firstboot.service `cat /proc/cmdline | sed 's/.*deploy_url=\([^ ]\+\).*/\1/'`/firstboot/ecopoiesis-firstboot.service; \
+in-target wget -q -O /usr/local/bin/ecopoiesis-firstboot.sh `cat /proc/cmdline | sed 's/.*deploy_url=\([^ ]\+\).*/\1/'`/firstboot/ecopoiesis-firstboot.sh; \
+#in-target wget https://raw.githubusercontent.com/antonym/test_deploy/master/firstboot/ecopoiesis-firstboot.service -O /etc/systemd/system/ecopoiesis-firstboot.service ; \
+#in-target wget https://raw.githubusercontent.com/antonym/test_deploy/master/firstboot/ecopoiesis-firstboot.sh -O /usr/local/bin/ecopoiesis-firstboot.sh ; \
+in-target chmod 0644 /etc/systemd/system/ecopoiesis-firstboot.service ; \
+in-target chmod 0755 /usr/local/bin/ecopoiesis-firstboot.sh ; \
+in-target systemctl daemon-reload ; \
+in-target systemctl enable ecopoiesis-firstboot.service
+
+# This is fairly safe to set, it makes grub install automatically to the MBR
+# if no other operating system is detected on the machine.
+d-i grub-installer/only_debian boolean true
+
+# This one makes grub-installer install to the MBR if it also finds some other
+# OS, which is less safe as it might not be able to boot that other OS.
+d-i grub-installer/with_other_os boolean true
+
+# Due notably to potential USB sticks, the location of the MBR can not be
+# determined safely in general, so this needs to be specified:
+#d-i grub-installer/bootdev  string /dev/sda
+# To install to the first device (assuming it is not a USB stick):
+#d-i grub-installer/bootdev  string default
+
+# Alternatively, if you want to install to a location other than the mbr,
+# uncomment and edit these lines:
+#d-i grub-installer/only_debian boolean false
+#d-i grub-installer/with_other_os boolean false
+#d-i grub-installer/bootdev  string (hd0,1)
+# To install grub to multiple disks:
+#d-i grub-installer/bootdev  string (hd0,1) (hd1,1) (hd2,1)
+
+# Optional password for grub, either in clear text
+#d-i grub-installer/password password r00tme
+#d-i grub-installer/password-again password r00tme
+# or encrypted using an MD5 hash, see grub-md5-crypt(8).
+#d-i grub-installer/password-crypted password [MD5 hash]
+
+# Use the following option to add additional boot parameters for the
+# installed system (if supported by the bootloader installer).
+# Note: options passed to the installer will be added automatically.
+#d-i debian-installer/add-kernel-opts string nousb
+
+### Finishing up the installation
+# During installations from serial console, the regular virtual consoles
+# (VT1-VT6) are normally disabled in /etc/inittab. Uncomment the next
+# line to prevent this.
+#d-i finish-install/keep-consoles boolean true
+
+# Avoid that last message about the install being complete.
+d-i finish-install/reboot_in_progress note
+
+# This will prevent the installer from ejecting the CD during the reboot,
+# which is useful in some situations.
+#d-i cdrom-detect/eject boolean false
+
+# This is how to make the installer shutdown when finished, but not
+# reboot into the installed system.
+#d-i debian-installer/exit/halt boolean true
+# This will power off the machine instead of just halting it.
+#d-i debian-installer/exit/poweroff boolean true
+
+### Preseeding other packages
+# Depending on what software you choose to install, or if things go wrong
+# during the installation process, it's possible that other questions may
+# be asked. You can preseed those too, of course. To get a list of every
+# possible question that could be asked during an install, do an
+# installation, and then run these commands:
+#   debconf-get-selections --installer > file
+#   debconf-get-selections >> file
