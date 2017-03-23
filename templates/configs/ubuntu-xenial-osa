@@ -74,16 +74,10 @@ d-i partman/confirm_nooverwrite boolean true
 d-i partman-lvm/confirm_nooverwrite boolean true
 d-i pkgsel/include string ubuntu-minimal openssh-server aptitude build-essential git ntp ntpdate python-dev sudo git ansible
 
-# Retrieve ansible playbook and run
+# Run post install scripts
 d-i preseed/late_command string \
-in-target wget -q -O /etc/systemd/system/ecopoiesis-firstboot.service `cat /proc/cmdline | sed 's/.*deploy_url=\([^ ]\+\).*/\1/'`/firstboot/ecopoiesis-firstboot.service; \
-in-target wget -q -O /usr/local/bin/ecopoiesis-firstboot.sh `cat /proc/cmdline | sed 's/.*deploy_url=\([^ ]\+\).*/\1/'`/firstboot/ecopoiesis-firstboot.sh; \
-#in-target wget https://raw.githubusercontent.com/antonym/test_deploy/master/firstboot/ecopoiesis-firstboot.service -O /etc/systemd/system/ecopoiesis-firstboot.service ; \
-#in-target wget https://raw.githubusercontent.com/antonym/test_deploy/master/firstboot/ecopoiesis-firstboot.sh -O /usr/local/bin/ecopoiesis-firstboot.sh ; \
-in-target chmod 0644 /etc/systemd/system/ecopoiesis-firstboot.service ; \
-in-target chmod 0755 /usr/local/bin/ecopoiesis-firstboot.sh ; \
-in-target systemctl daemon-reload ; \
-in-target systemctl enable ecopoiesis-firstboot.service
+in-target uptime; \ 
+in-target uptime
 
 # This is fairly safe to set, it makes grub install automatically to the MBR
 # if no other operating system is detected on the machine.
