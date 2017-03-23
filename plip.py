@@ -165,12 +165,14 @@ def get_pxe_script(config_file=None):
         abort(server_data)
 
     server_data_dump = indenter(server_data)    # For debugging
+    ecopoiesis_host_ip = config.ecopoiesis_host_ip
 
     # Generate PXE script
     pxedata = render_template(template,
                               server_data=server_data,
                               server_data_dump=server_data_dump,
                               request=request,
+                              ecopoiesis_host_ip=ecopoiesis_host_ip,
                               timestamp=timestamp)
 
     r = make_response(pxedata)
