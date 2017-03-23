@@ -72,10 +72,10 @@ d-i partman/choose_partition select finish
 d-i partman/confirm boolean true
 d-i partman/confirm_nooverwrite boolean true
 d-i partman-lvm/confirm_nooverwrite boolean true
-d-i pkgsel/include string ubuntu-minimal openssh-server aptitude build-essential git ntp ntpdate python-dev sudo git ansible
+d-i pkgsel/include string ubuntu-minimal openssh-server aptitude build-essential git ntp ntpdate python-dev sudo git ansible curl
 
 # Run post install scripts
-d-i preseed/late_command string curl "http://{{ ecopoiesis_host_ip }}/plip/update/status?host_id={{ server_data['id'] }}&boot_status=localboot"
+d-i preseed/late_command string in-target curl "http://{{ ecopoiesis_host_ip }}/plip/update/status?host_id={{ server_data['id'] }}&boot_status=localboot"
 
 # This is fairly safe to set, it makes grub install automatically to the MBR
 # if no other operating system is detected on the machine.
