@@ -77,6 +77,10 @@ d-i pkgsel/include string ubuntu-minimal openssh-server aptitude build-essential
 # Run post install scripts
 d-i preseed/late_command string in-target curl "http://{{ ecopoiesis_host_ip }}/plip/update/status?host_id={{ server_data['id'] }}&boot_status=localboot"
 
+# Verbose output and no boot splash screen
+d-i	debian-installer/quiet	boolean false
+d-i	debian-installer/splash	boolean false
+
 # This is fairly safe to set, it makes grub install automatically to the MBR
 # if no other operating system is detected on the machine.
 d-i grub-installer/only_debian boolean true
