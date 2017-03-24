@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from flask import Flask, render_template, make_response, request, abort
+from flask import jsonify
 import json
 import logging
 import os
@@ -96,6 +97,29 @@ def get_server_by_switch(switch_name, switch_port, datacentre):
         return r.status_code
 
 
+def update_boot_status(server_number, boot_status):
+    """
+    Changes the ecopoiesis_boot_status to another value to change boot
+    behavior.
+
+    Returns response from Craton in json format.
+    """
+    boot_status_string = "%s" % (boot_status)
+
+    payload = {
+        'ecopoiesis_boot_status': boot_status
+    }
+    url = '%s/hosts/%s/variables' % (craton_url, server_number)
+    logging.info("Updating ecopoiesis_boot_status: %s" % payload)
+    
+    r = requests.put(url, json=payload, headers=auth_headers())
+
+    if r.status_code == requests.codes.ok:
+        return r.json()
+    else:
+        return r.status_code
+
+
 def strip_switch(switch_name):
     '''
         Returns a tuple of (<switch name>, <dc>)
@@ -179,6 +203,21 @@ def get_pxe_script(config_file=None):
     r.mimetype = "text/plain"
 
     return r
+
+
+@app.route("/update")
+@app.route("/update/status")
+def set_boot_status():
+    # Get the server number and status from request
+    server_number = request.args.get('server_number')
+    boot_status = request.args.get('boot_status')
+
+    if server_number is None or boot_status is None:
+        abort(412)
+
+    response = update_boot_status(server_number, boot_status)
+
+    return jsonify(response)
 
 
 if __name__ == "__main__":
