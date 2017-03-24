@@ -109,11 +109,10 @@ def update_boot_status(server_number, boot_status):
     payload = {
         'ecopoiesis_boot_status': boot_status
     }
+
     url = '%s/hosts/%s/variables' % (craton_url, server_number)
     logging.info("Updating ecopoiesis_boot_status: %s" % payload)
-    
     r = requests.put(url, json=payload, headers=auth_headers())
-
     if r.status_code == requests.codes.ok:
         return r.json()
     else:
@@ -213,6 +212,9 @@ def set_boot_status():
     boot_status = request.args.get('boot_status')
 
     if server_number is None or boot_status is None:
+        abort(412)
+    
+    if boot_status not in ("localboot", "netboot"):
         abort(412)
 
     response = update_boot_status(server_number, boot_status)
