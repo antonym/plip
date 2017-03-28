@@ -48,14 +48,14 @@ def indenter(text_to_indent):
     return temp.strip()
 
 
-def get_server_by_number(server_number):
+def get_server_by_number(host_id):
     """
     Retrieves information about a server from Craton in json format.
 
     Return json if successful, False if unsuccessful.
     """
 
-    url = '%s/hosts/%s' % (craton_url, server_number)
+    url = '%s/hosts/%s' % (craton_url, host_id)
     r = requests.get(url, headers=auth_headers())
     if r.status_code == requests.codes.ok:
         return r.json()
@@ -97,7 +97,7 @@ def get_server_by_switch(switch_name, switch_port, datacentre):
         return r.status_code
 
 
-def update_boot_status(server_number, boot_status):
+def update_boot_status(host_id, boot_status):
     """
     Changes the ecopoiesis_boot_status to another value to change boot
     behavior.
@@ -110,7 +110,7 @@ def update_boot_status(server_number, boot_status):
         'ecopoiesis_boot_status': boot_status
     }
 
-    url = '%s/hosts/%s/variables' % (craton_url, server_number)
+    url = '%s/hosts/%s/variables' % (craton_url, host_id)
     logging.info("Updating ecopoiesis_boot_status: %s" % payload)
     r = requests.put(url, json=payload, headers=auth_headers())
     if r.status_code == requests.codes.ok:
@@ -160,8 +160,8 @@ def get_pxe_script(config_file=None):
         template = 'configs/' + config_file
 
     if 'number' in request.args:
-        server_number = request.args.get('number')
-        server_data = get_server_by_number(server_number)
+        host_id = request.args.get('number')
+        server_data = get_server_by_number(host_id)
     elif 'mac' in request.args:
         mac = request.args.get('mac')
         mac_address = mac.replace("-", ":")
@@ -208,16 +208,16 @@ def get_pxe_script(config_file=None):
 @app.route("/update/status")
 def set_boot_status():
     # Get the server number and status from request
-    server_number = request.args.get('server_number')
+    host_id = request.args.get('host_id')
     boot_status = request.args.get('boot_status')
 
-    if server_number is None or boot_status is None:
+    if host_id is None or boot_status is None:
         abort(412)
     
     if boot_status not in ("localboot", "netboot"):
         abort(412)
 
-    response = update_boot_status(server_number, boot_status)
+    response = update_boot_status(host_id, boot_status)
 
     return jsonify(response)
 
