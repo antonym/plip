@@ -77,6 +77,7 @@ d-i pkgsel/include string ubuntu-minimal openssh-server aptitude build-essential
 # Run post install scripts
 d-i preseed/late_command string \
     in-target curl 'http://{{ ecopoiesis_host_ip }}/plip/update/status?host_id={{ server_data['id'] }}&boot_status=localboot'; \
+    in-target mkdir -p /root/.ssh; \
     in-target /bin/sh -c "echo '{{ server_data['variables']['ssh_key'] | default('# authorized_keys') }}' >> /root/.ssh/authorized_keys";
 
 # Verbose output and no boot splash screen
