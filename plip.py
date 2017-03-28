@@ -159,8 +159,8 @@ def get_pxe_script(config_file=None):
     else:
         template = 'configs/' + config_file
 
-    if 'number' in request.args:
-        host_id = request.args.get('number')
+    if 'host_id' in request.args:
+        host_id = request.args.get('host_id')
         server_data = get_server_by_number(host_id)
     elif 'mac' in request.args:
         mac = request.args.get('mac')
