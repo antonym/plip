@@ -70,7 +70,8 @@ def get_server_by_mac(mac_address):
     Return json if successful, False if unsuccessful.
     """
 
-    url = '%s/hosts?vars=macs:%s&details=all' % (craton_url, mac_address)
+    url = '%s/hosts?vars=macs[*]:"%s"&details=all' % (craton_url, mac_address)
+
     r = requests.get(url, headers=auth_headers())
     if r.status_code == requests.codes.ok:
         return r.json()
@@ -78,12 +79,11 @@ def get_server_by_mac(mac_address):
         return r.status_code
 
 
-def get_server_by_switch(switch_name, switch_port, datacentre):
+def get_server_by_switch(switch_name, switch_port):
     """
     Retrieves information about a server from Craton in json format.
-      - switch_name: stripped switch name without datacenter
-      - switch port: single number w/o interface, would be '7' for Gi1/7
-      - datacentre: datacentre portion of the stripped switch name
+      - switch_name: ex. servers-lab-1.sat6
+      - switch port: ex. Ethernet1/6 
 
     Return json if successful, False if unsuccessful.
     """
@@ -119,18 +119,6 @@ def update_boot_status(host_id, boot_status):
         return r.json()
     else:
         return r.status_code
-
-
-def strip_switch(switch_name):
-    '''
-        Returns a tuple of (<switch name>, <dc>)
-    '''
-    return (switch_name.upper().split('.')[0],
-            switch_name.lower().split('.')[1])
-
-
-def strip_switch_port(switch_port):
-    return switch_port.rsplit('/', 1)[1]
 
 
 @app.route("/")
@@ -171,14 +159,13 @@ def get_pxe_script(config_file=None):
     else:
         # Get the switch data and strip it
         switch_name = request.args.get('switch_name')
-        switch_name_stripped, datacentre_stripped = strip_switch(switch_name)
         switch_port = request.args.get('switch_port')
-        switch_port_stripped = strip_switch_port(switch_port)
 
         # Get the Craton data for this switch name/port combo
-        server_data = get_server_by_switch(switch_name_stripped,
-                                           switch_port_stripped,
-                                           datacentre_stripped)
+        server_data = get_server_by_switch(switch_name,
+                                           switch_port)
+
+        server_data = server_data['hosts'][0]
 
     # Create a timestamp for the PXE script output
     timestamp = strftime("%a, %d %b %Y %H:%M:%S +0000", gmtime())
@@ -215,7 +202,7 @@ def set_boot_status():
 
     if host_id is None or boot_status is None:
         abort(412)
-    
+
     if boot_status not in ("localboot", "netboot"):
         abort(412)
 
