@@ -88,8 +88,10 @@ def get_server_by_switch(switch_name, switch_port, datacentre):
     Return json if successful, False if unsuccessful.
     """
 
-    url = '%s/hosts?vars=switch_name:%s,switch_port:%s' % (
-               craton_url, switch_name, switch_port)
+    url = ('%s/hosts?details=all&vars=lldp.*.chassis.name:"%s",' +
+           'lldp.*.port.ifname:"%s"') % (craton_url, switch_name,
+                                         switch_port)
+
     r = requests.get(url, headers=auth_headers())
     if r.status_code == requests.codes.ok:
         return r.json()
