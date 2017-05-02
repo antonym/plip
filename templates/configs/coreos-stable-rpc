@@ -44,7 +44,7 @@
   "passwd": {
     "users": [
       {
-        "name": "systemUser",
+        "name": "root",
         "passwordHash": "$superSecretPasswordHash.",
         "sshAuthorizedKeys": [
           "{{ server_data['variables']['ssh_key'] }}"
