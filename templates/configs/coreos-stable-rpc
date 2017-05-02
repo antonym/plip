@@ -1,0 +1,55 @@
+{
+  "ignition": {
+    "version": "2.0.0",
+    "config": {}
+  },
+  "storage": {
+    "disks": [
+      {
+        "device": "/dev/sda",
+        "wipeTable": true,
+        "partitions": [
+          {
+            "label": "ROOT",
+            "number": 0,
+            "size": 0,
+            "start": 0
+          }
+        ]
+      }
+    ],
+    "filesystems": [
+      {
+        "mount": {
+          "device": "/dev/disk/by-partlabel/ROOT",
+          "format": "ext4",
+          "create": {
+            "force": true,
+            "options": [
+              "-L",
+              "ROOT"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "systemd": {},
+  "networkd": {
+    "units": [{
+      "name": "00-eno2.network",
+      "contents": "[Match]\nName=eno2\n\n[Network]\nAddress={{ server_data['variables']['mgmt_ip_address'] }}\nGateway={{ server_data['variables']['mgmt_gateway_ip'] }}"
+    }]
+  },
+  "passwd": {
+    "users": [
+      {
+        "name": "systemUser",
+        "passwordHash": "$superSecretPasswordHash.",
+        "sshAuthorizedKeys": [
+          "{{ server_data['variables']['ssh_key'] }}"
+        ]
+      }
+    ]
+  }
+}
