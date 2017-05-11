@@ -1,0 +1,69 @@
+# Install OS instead of upgrade
+install
+
+# Use network installation
+url --url="http://mirror.rackspace.com/centos/7/os/x86_64/"
+repo --name=base --baseurl=http://mirror.rackspace.com/centos/7/os/x86_64/
+repo --name=epel --baseurl=http://mirror.rackspace.com/epel/7/x86_64/
+
+# Root password
+#rootpw --iscrypted $1$ITYLaake$2U14.TtR3FglwwTKPlr5L.
+rootpw qwerty1234
+
+# System authorization information
+auth  --useshadow  --passalgo=sha512
+
+# Firewall configuration
+firewall --enabled --ssh
+# SELinux configuration
+selinux --enforcing
+
+# Installation logging level
+logging --level=info
+# Use text mode install
+text
+# Do not configure the X Window System
+skipx
+# System timezone, language and keyboard
+timezone --utc America/Los_Angeles
+lang en_US
+keyboard fr-pc
+# Network information
+# dhcp address:
+# network  --bootproto=dhcp --device=eth0 --onboot=on
+# static address:
+network --device eth0 --hostname {{ server_data['variables']['server_name'] }} --bootproto=static --ip={{ server_data['variables']['mgmt_ip_address'] }} --netmask={{ server_data['variables']['mgmt_netmask'] }} --gateway={{ server_data['variables']['mgmt_gateway_ip'] }} --nameserver {{ server_data['variables']['primary_dns'] }} --nameserver {{ server_data['variables']['secondary_dns'] }}
+
+# System bootloader configuration
+bootloader --location=mbr
+# Partition clearing information
+clearpart --all --initlabel
+# Disk partitioning information
+part /boot --fstype="ext4" --size=512
+# --> LVM
+part pv.01 --size=1 --grow --ondisk=sda
+volgroup vg_root --pesize=4096 pv.01
+logvol / --fstype="ext4" --size=1024 --vgname=vg_root --name=lv_root
+logvol /usr --fstype="ext4" --size=3072 --vgname=vg_root --name=lv_usr
+logvol /tmp --fstype="ext4" --size=1024 --vgname=vg_root --name=lv_tmp
+logvol /var --fstype="ext4" --size=5120 --vgname=vg_root --name=lv_var
+logvol /home --fstype="ext4" --size=512 --vgname=vg_root --name=lv_home
+logvol swap --fstype="ext4" --size=1024 --vgname=vg_root --name=lv_swap
+
+# If you just don't want to use LVM, just use this
+# part /boot --fstype="ext4" --size=512
+# part swap --fstype="swap" --recommended
+# part /var --fstype="ext4" --size=5120
+# part / --fstype="ext4" --size=1024
+# part /usr --fstype="ext4" --size=3072
+# part /home --fstype="ext4" --size=512
+# part /tmp --fstype="ext4" --size=1024
+
+# Reboot after installation
+reboot
+
+%packages  --nobase
+@core
+# @base
+
+%end
