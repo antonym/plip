@@ -32,7 +32,7 @@ keyboard us
 # dhcp address:
 # network  --bootproto=dhcp --device=eth0 --onboot=on
 # static address:
-network --device eth0 --hostname {{ server_data['variables']['server_name'] }} --bootproto=static --ip={{ server_data['variables']['mgmt_ip_address'] }} --netmask={{ server_data['variables']['mgmt_netmask'] }} --gateway={{ server_data['variables']['mgmt_gateway_ip'] }} --nameserver {{ server_data['variables']['primary_dns'] }} --nameserver {{ server_data['variables']['secondary_dns'] }}
+network --device eth0 --hostname {{ server_data['variables']['server_name'] }} --bootproto=static --ip={{ server_data['variables']['mgmt_ip_address'] }} --netmask={{ server_data['variables']['mgmt_netmask'] }} --gateway={{ server_data['variables']['mgmt_gateway_ip'] }} --nameserver={{ server_data['variables']['primary_dns'] }} --nameserver={{ server_data['variables']['secondary_dns'] }}
 
 # System bootloader configuration
 bootloader --location=mbr
