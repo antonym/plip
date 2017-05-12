@@ -68,7 +68,7 @@ reboot
 
 %end
 
-%post --nochroot --log /var/log/post.log
+%post --nochroot --log /var/log/post.log --interpreter /bin/bash
 # set up ssh_key if specified
 mkdir -p /mnt/sysimage/root/.ssh
 echo '{{ server_data['variables']['ssh_key'] | default('# authorized_keys') }}' >> /mnt/sysimage/root/.ssh/authorized_keys"
