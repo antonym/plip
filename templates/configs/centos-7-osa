@@ -70,8 +70,8 @@ reboot
 
 %post --nochroot --log /var/log/post.log
 # set up ssh_key if specified
-mkdir -p /root/.ssh
-echo '{{ server_data['variables']['ssh_key'] | default('# authorized_keys') }}' >> /mnt/sysimage//root/.ssh/authorized_keys"
+mkdir -p /mnt/sysimage/root/.ssh
+echo '{{ server_data['variables']['ssh_key'] | default('# authorized_keys') }}' >> /mnt/sysimage/root/.ssh/authorized_keys"
 # call back and flip status to boot locally
 curl 'http://{{ ecopoiesis_host_ip }}/plip/update/status?host_id={{ server_data['id'] }}&boot_status=localboot'
 
