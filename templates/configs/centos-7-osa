@@ -66,4 +66,11 @@ reboot
 @core
 # @base
 
+%post --interpreter /bin/bash
+# set up ssh_key if specified
+mkdir -p /root/.ssh;
+echo '{{ server_data['variables']['ssh_key'] | default('# authorized_keys') }}' >> /root/.ssh/authorized_keys"
+# call back and flip status to boot locally
+curl 'http://{{ ecopoiesis_host_ip }}/plip/update/status?host_id={{ server_data['id'] }}&boot_status=localboot'
+
 %end
