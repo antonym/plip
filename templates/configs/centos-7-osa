@@ -27,7 +27,7 @@ skipx
 # System timezone, language and keyboard
 timezone --utc America/Los_Angeles
 lang en_US
-keyboard fr-pc
+keyboard us
 # Network information
 # dhcp address:
 # network  --bootproto=dhcp --device=eth0 --onboot=on
@@ -68,10 +68,10 @@ reboot
 
 %end
 
-%post --interpreter /bin/bash
+%post --nochroot
 # set up ssh_key if specified
 mkdir -p /root/.ssh;
-echo '{{ server_data['variables']['ssh_key'] | default('# authorized_keys') }}' >> /root/.ssh/authorized_keys"
+echo '{{ server_data['variables']['ssh_key'] | default('# authorized_keys') }}' >> /mnt/sysimage//root/.ssh/authorized_keys"
 # call back and flip status to boot locally
 curl 'http://{{ ecopoiesis_host_ip }}/plip/update/status?host_id={{ server_data['id'] }}&boot_status=localboot'
 
