@@ -66,6 +66,8 @@ reboot
 @core
 # @base
 
+%end
+
 %post --interpreter /bin/bash
 # set up ssh_key if specified
 mkdir -p /root/.ssh;
