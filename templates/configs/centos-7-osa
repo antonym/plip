@@ -39,6 +39,7 @@ bootloader --location=mbr
 # Partition clearing information
 clearpart --all --initlabel
 # Disk partitioning information
+part biosboot --fstype=biosboot --size=1
 part /boot --fstype="ext4" --size=512
 # --> LVM
 part pv.01 --size=1 --grow --ondisk=sda
