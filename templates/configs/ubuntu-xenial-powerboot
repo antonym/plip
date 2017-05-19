@@ -1,0 +1,21 @@
+### Ecopoiesis - Ubuntu Xenial OpenPower Bootloader
+### 
+### host_id: {{server_data['id']}}
+### boot_os: {{server_data['variables']['ecopoiesis_boot_os']}}
+### boot_os_version: {{server_data['variables']['ecopoiesis_boot_os_version']}}
+### boot_status: {{server_data['variables']['ecopoiesis_boot_status']}}
+### ecopoiesis_boot_profile: {{server_data['variables']['ecopoiesis_boot_profile']}}
+
+default {{ server_data['variables']['ecopoiesis_boot_status'] }}
+
+label {{ server_data['variables']['ecopoiesis_boot_status'] }}{% if server_data['variables']['ecopoiesis_boot_status'] == "localboot" %}
+        LOCALBOOT 0
+{% elif server_data['variables']['ecopoiesis_boot_status'] == "install_os" %}
+    kernel http://ports.ubuntu.com/ubuntu-ports/dists/xenial-updates/main/installer-ppc64el/current/images/netboot/ubuntu-installer/ppc64el/vmlinux
+    initrd http://ports.ubuntu.com/ubuntu-ports/dists/xenial-updates/main/installer-ppc64el/current/images/netboot/ubuntu-installer/ppc64el/initrd.gz
+    append mirror/suite=xenial mirror/country=manual mirror/http/hostname=ports.ubuntu.com mirror/http/directory=/ubuntu-ports auto=true priority=critical preseed/url=http://{{ ecopoiesis_host}}/plip/pxe/configs/ubuntu-xenial-osa?number={{server_data['id']}} netcfg/get_ipaddress={{server_data['variables']['mgmt_ip_address']}} netcfg/get_netmask={{server_data['variables']['mgmt_netmask']}} netcfg/get_gateway={{server_data['variables']['mgmt_gateway_ip']}} netcfg/get_nameservers={{server_data['variables']['primary_dns']}} netcfg/confirm_static=true netcfg/choose_interface=auto netcfg/disable_autoconfig=true netcfg/link_wait_timeout=60
+{% elif server_data['variables']['ecopoiesis_boot_status'] == "provision" %}
+    kernel http://{{ ecopoiesis_host }}/images/ecopoiesis-utility/vmlinuz
+    module http://{{ ecopoiesis_host }}/images/ecopoiesis-utility/initrd.img
+    append root=live:http://{{ ecopoiesis_host }}/images/ecopoiesis-utility/rootfs.img ip=dhcp nomodeset rd.writable.fsimg rd.shell enforcing=0 playbook={{server_data['variables']['ecopoiesis_boot_status']}} profile={{server_data['variables']['ecopoiesis_boot_profile']}} 
+{% endif %}
